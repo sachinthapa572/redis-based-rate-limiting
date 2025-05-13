@@ -12,8 +12,8 @@ interface Config {
         url: string;
     };
     rateLimit: {
-        windowMs: number;
-        maxRequests: number;
+        bucketCapacity: number;
+        refillRate: number;
     };
 }
 
@@ -26,8 +26,8 @@ const config: Config = {
         url: process.env.REDIS_URL || "",
     },
     rateLimit: {
-        windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || "86400000", 10), 
-        maxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "100", 10),
+        bucketCapacity: parseInt(process.env.BUCKET_CAPACITY || "5", 10),  // Maximum tokens per bucket
+        refillRate: parseInt(process.env.REFILL_RATE || "1", 1),       // Tokens added per second
     },
 };
 

@@ -61,3 +61,12 @@ npx artillery run <test-script>.yml --record --key <API_KEY>
 > Note: Replace `<API_KEY>` with your Artillery Cloud API key.
 
 For comprehensive documentation and advanced configurations, refer to the [official Artillery documentation](https://www.artillery.io/docs/).
+
+## Rate Limiting
+
+Rate limiting is a technique used to control the amount of incoming and outgoing traffic to or from a network. It helps prevent abuse, ensures fair usage, and protects against DDoS attacks.
+
+for more information on rate limiting, refer to the
+
+- [Token Bucket Algorithm](https://www.geeksforgeeks.org/token-bucket-algorithm/).
+- [Article](https://medium.com/@anil.goyal0057/rate-limiter-using-token-bucket-algorithm-9911f27ba182)

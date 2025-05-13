@@ -1,25 +1,16 @@
-import { error } from "console";
 import type { NextFunction, Request, Response } from "express";
 import config from "../config/env";
 import { checkRateLimit } from "../services/redis";
+import type { RateLimiterOptions } from "../types/type";
 import { RateLimitError } from "../utils/errors";
 import logger from "../utils/logger";
 
-interface RateLimiterOptions {
-    // Function to extract the identifier from the request
-    identifierFn: (req: Request) => string;
-    // Maximum number of requests allowed in the window
-    limit?: number;
-    // Duration of the rate limit window in milliseconds
-    windowMs?: number;
-    // Whether to skip the rate limiter for certain requests
-    skipFn?: (req: Request) => boolean;
-}
+
 
 export const rateLimiter = ({
     identifierFn,
-    limit = config.rateLimit.maxRequests,
-    windowMs = config.rateLimit.windowMs,
+    capacity = config.rateLimit.bucketCapacity || 10,
+    refillRate = config.rateLimit.refillRate || 1,
     skipFn,
 }: RateLimiterOptions) => {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -32,19 +23,22 @@ export const rateLimiter = ({
             // Get the identifier for this request
             const identifier = identifierFn(req);
 
-            // Check if the request is rate limited
-            const { limited, retryAfter } = await checkRateLimit(
+            // Check if the request is rate limited using token bucket algorithm
+            const { limited, retryAfter, remainingTokens } = await checkRateLimit(
                 identifier,
-                limit,
-                windowMs
+                capacity,
+                refillRate
             );
 
             // Set RateLimit headers
-            res.set("X-RateLimit-Limit", `${limit}`);
+            res.set("X-RateLimit-Limit", `${capacity}`);
+            if (remainingTokens !== undefined) {
+                res.set("X-RateLimit-Remaining", `${remainingTokens}`);
+            }
 
             if (limited && retryAfter) {
                 // If rate limited, throw an error
-                logger.info("Rate limit exceeded", error);
+                logger.info(`Rate limit exceeded for ${identifier}`);
                 res.set("Retry-After", `${retryAfter}`);
                 throw new RateLimitError("Rate limit exceeded", retryAfter);
             }

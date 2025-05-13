@@ -1,13 +1,14 @@
 import axios, { type AxiosResponse } from "axios";
 import { Router } from "express";
 import { rateLimiter } from "../middleware/rateLimiter";
+import type { ResponseJoke } from "../types/type";
 import { AppError } from "../utils/errors";
 import logger from "../utils/logger";
 import redisClient from "../utils/redisClient";
 
 const router = Router();
 
-// Apply a rate limiter middleware to all API routes
+// Apply a token bucket rate limiter middleware to all API routes
 router.use(
     rateLimiter({
         identifierFn: (req) => {
@@ -16,32 +17,15 @@ router.use(
             // Optionally add a path-specific prefix to allow different rate limits for different endpoints
             return `${req.method}:${req.path}:${identifier}`;
         },
+        // Configure token bucket parameters
+        capacity: 10,  // Maximum number of tokens (requests) allowed
+        refillRate: 1, // Tokens refilled per second
         skipFn: (req) => {
+            // Skip rate limiting for health check endpoints and todo routes
             return req.path === "/health" || req.path.startsWith("/todo");
         },
     })
 );
-
-export interface ResponseJoke {
-    error: boolean
-    category: string
-    type: string
-    joke: string
-    flags: Flags
-    id: number
-    safe: boolean
-    lang: string
-}
-
-export interface Flags {
-    nsfw: boolean
-    religious: boolean
-    political: boolean
-    racist: boolean
-    sexist: boolean
-    explicit: boolean
-}
-
 
 // Health check route
 router.get("/health", (req, res) => {
@@ -58,7 +42,6 @@ router.get("/data", (req, res) => {
         },
     });
 });
-
 
 
 // Jokes route with Redis caching
