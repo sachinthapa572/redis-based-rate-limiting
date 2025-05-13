@@ -5,7 +5,7 @@
 ### Clone Repository
 
 ```bash
-git clone
+git clone https://github.com/sachinthapa572/redis-based-rate-limiting.git
 ```
 
 ### Navigate to Project Directory
