@@ -1,0 +1,55 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 10
+      arrivalRate: 2
+  plugins:
+    fake-data: {}
+  # http:
+  #   headers:
+  #     Authorization: "Bearer YOUR_JWT_TOKEN_HERE"
+
+scenarios:
+  - name: "Create, get, update, delete"
+    flow:
+      - post:
+          url: "/api/todo"
+          json:
+            title: "{{ $randMusicGenre() }}"
+          capture:
+            - json: "$.id"
+              as: todoId
+          expect:
+            - statusCode: 201
+
+      - get:
+          url: "/api/todo"
+          expect:
+            - statusCode: 200
+
+      - put:
+          url: "/api/todo/{{ todoId }}"
+          json:
+            title: "{{ $randMusicGenre() }}"
+          expect:
+            - statusCode: 200
+
+      - delete:
+          url: "/api/todo/{{ todoId }}"
+          expect:
+            - statusCode: 204
+
+
+# scenarios:
+#   - name: Create and fetch todos
+#     flow:
+#       - post:
+#           url: "/api/todos"
+#           json:
+#             title: "{{ title }}"
+#       - get:
+#           url: "/api/todos"
+#  payload:
+#     path: "./todo-data.csv"  # Data for POST requests
+#     fields:
+#       - title

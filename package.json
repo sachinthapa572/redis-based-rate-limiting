@@ -1,0 +1,42 @@
+{
+  "name": "redis-based-rate-limiting",
+  "module": "src/server.ts",
+  "type": "module",
+  "main": "dist/server.js",
+  "description": "Production-level API with Redis-based rate limiting",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "bun run --hot src/server.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.13",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.1",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.15.17",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "eslint": "^9.26.0",
+    "ts-node-dev": "^2.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@types/axios": "^0.14.4",
+    "@types/redis": "^4.0.11",
+    "artillery": "^2.0.23",
+    "axios": "^1.9.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.6.1",
+    "morgan": "^1.10.0",
+    "pino": "^9.6.0",
+    "pino-http": "^10.4.0",
+    "redis": "^5.0.1",
+    "winston": "^3.17.0"
+  }
+}
